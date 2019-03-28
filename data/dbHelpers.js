@@ -22,10 +22,33 @@ const addRecipe = recipe => {
   return db("recipes").insert(recipe);
 };
 
+const getRecipe = id => {
+  return db("recipes")
+    .innerJoin("dishes", "recipes.dish_id", "dishes.id")
+    .innerJoin(
+      "ingredients_recipes",
+      "recipes.id",
+      "ingredients_recipes.recipe_id"
+    )
+    .innerJoin(
+      "ingredients",
+      "ingredients.id",
+      "ingredients_recipes.ingredient_id"
+    )
+    .select({
+      dish_name: "dishes.name",
+      recipe_name: "recipes.name",
+      ingredient_quantity: "ingredients_recipes.quantity",
+      ingredient_name: "ingredients.name"
+    })
+    .where({ "recipes.id": id });
+};
+
 module.exports = {
   getDishes,
   addDish,
   getDish,
   getRecipes,
-  addRecipe
+  addRecipe,
+  getRecipe
 };

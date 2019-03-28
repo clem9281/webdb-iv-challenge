@@ -31,4 +31,23 @@ router
     }
   });
 
+router.route("/:id").get(async (req, res) => {
+  try {
+    const recipeRaw = await db.getRecipe(req.params.id);
+    // clean up the recipe so it looks nice
+    const recipe = {
+      dish_name: recipeRaw[0].dish_name,
+      recipe_name: recipeRaw[0].recipe_name,
+      ingredients: recipeRaw.map(
+        el => `${el.ingredient_quantity} of ${el.ingredient_name}`
+      )
+    };
+    res.status(200).json(recipe);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Sorry, we couldn't find that recipe at this time" });
+  }
+});
+
 module.exports = router;
